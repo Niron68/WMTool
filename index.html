@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items</title>
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <input type="text" id='searchItems' disabled />
+    <button id='butRefresh' disabled>Refresh</button>
+    <div class='allTable'>
+        <table>
+            <thead>
+                <th></th>
+                <th>Name</th>
+                <th>Price</th>
+            </thead>
+            <tbody id='tableItems'>
+                
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <th></th>
+                <th>Name</th>
+                <th>Price</th>
+            </thead>
+            <tbody id='tableRelics'>
+                
+            </tbody>
+        </table>
+    </div>
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <span class="close" id='closeModal'>&times;</span>
+          <div id='modal-content'>
+
+          </div>
+        </div>
+      
+    </div>
+</body>
+</html>
