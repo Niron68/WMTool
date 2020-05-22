@@ -8,6 +8,20 @@ class Item {
     }
 }
 
+class Rarity{
+    constructor(name){
+        this.name = name;
+        if(this.name == 'Uncommon'){
+            this.raffinage = new Map([['Intact', 11],['Exceptional', 13],['Flawless', 17],['Radiant', 20]]);
+        }else if(this.name = 'Rare'){
+            this.raffinage = new Map([['Intact', 2],['Exceptional', 4],['Flawless', 6],['Radiant', 10]]);
+        }else{
+            this.raffinage = new Map([['Intact', 25.33],['Exceptional', 23.33],['Flawless', 20],['Radiant', 16.67]]);
+            this.name = 'Common';
+        }
+    }
+}
+
 class Relic {
     constructor(ere, name){
         this.ere = ere;
@@ -18,9 +32,9 @@ class Relic {
     get averagePrice(){
         let total = 0;
         this.loot.forEach((value, key, map) => {
-            total += key.price;
+            total += key.price * value.raffinage.get('Intact');
         });
-        return total/this.loot.size;
+        return total/100;
     }
 
     get fullName(){
@@ -122,7 +136,7 @@ function fillTable(table, list){
         row.addEventListener('click', () => {
             el.relics.forEach((value, key, map) => {
                 let text = document.createElement('p');
-                text.innerText = key + ' ' + value;
+                text.innerText = key + ' ' + value.name;
                 modalContent.appendChild(text);
             })
             modal.style.display = 'block';
@@ -140,7 +154,7 @@ function fillWithRelics(table, list){
         row.addEventListener('click', () => {
             el.loot.forEach((value, key, map) => {
                 let text = document.createElement('p');
-                text.innerText = value + ' ' + key.name + ' ' + key.price + 'pl';
+                text.innerText = value.name + ' ' + key.name + ' ' + key.price + 'pl';
                 modalContent.appendChild(text);
             });
             modal.style.display = 'block';
@@ -221,8 +235,8 @@ function loadData(){
                                         }else if(re.chance == 2){
                                             rarity = 'Rare';
                                         }
-                                        item.relics.set(rel.ere + ' ' + rel.name, rarity);
-                                        rel.loot.set(item, rarity);
+                                        item.relics.set(rel.ere + ' ' + rel.name, new Rarity(rarity));
+                                        rel.loot.set(item, new Rarity(rarity));
                                     }
                                 });
                                 relics.push(rel);
