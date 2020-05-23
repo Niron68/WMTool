@@ -70,6 +70,10 @@ main = () => {
         fillTable(newBody, filterByName(sortByPrice(items), searchItems.value));
         tableItems.parentNode.replaceChild(newBody, tableItems);
         tableItems = newBody;
+        let newBody2 = document.createElement('tbody');
+        fillWithRelics(newBody2, filterByRelicName(sortByAveragePrice(relics), searchItems.value));
+        tableRelics.parentNode.replaceChild(newBody2, tableRelics);
+        tableRelics = newBody2;
     });
 
     butRefresh.addEventListener('click', () => {
@@ -177,7 +181,7 @@ function refreshPrice(){
                 let orders = jsons[i]['payload']['orders'];
                 let minPrice = null;
                 orders.forEach((or) => {
-                    if(or.platform == 'pc' && or.order_type == 'sell'){
+                    if(or.platform == 'pc' && or.order_type == 'sell' && or.visible && or.user.status == 'ingame'){
                         if(minPrice == null){
                             minPrice = or.platinum;
                         }else if(or.platinum < minPrice){
