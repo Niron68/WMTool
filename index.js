@@ -56,6 +56,7 @@ let tableRelics;
 let searchItems;
 let butRefresh;
 let checkboxVaulted;
+let checkboxSet;
 
 main = () => {
     tableItems = document.getElementById('tableItems');
@@ -66,6 +67,7 @@ main = () => {
     closeModal = document.getElementById('closeModal');
     modalContent = document.getElementById('modal-content');
     checkboxVaulted = document.getElementById('checkboxVaulted');
+    checkboxSet = document.getElementById('checkboxSet');
 
     loadData();
 
@@ -74,6 +76,10 @@ main = () => {
     });
 
     checkboxVaulted.addEventListener('change', () => {
+        refreshDisplay();
+    });
+
+    checkboxSet.addEventListener('change', () => {
         refreshDisplay();
     });
 
@@ -134,6 +140,12 @@ function filterRelicByVaulted(list){
     return list;
 }
 
+function filterBySet(list){
+    if(!checkboxSet.checked)
+        return list.filter(el => !el.name.toLowerCase().includes('prime set'));
+    return list;
+}
+
 function fillTable(table, list){
     list.forEach(el => {
         let row = table.insertRow();
@@ -185,6 +197,7 @@ function fillWithRelics(table, list){
 function applyFilter(){
     let res = sortByPrice(items);
     res = filterByName(res, searchItems.value);
+    res = filterBySet(res);
     return res;
 }
 
@@ -228,7 +241,7 @@ function refreshPrice(){
 
             searchItems.disabled = false;
             butRefresh.disabled = false;
-            
+            checkboxSet.disabled = false;
         });
 }
 
@@ -271,7 +284,7 @@ function loadData(){
             allItems = json['payload']['items'];
             if(allItems.length != 0){
                 allItems.forEach((el) => {
-                    if(el.item_name.toLowerCase().includes(' prime ') && !el.item_name.toLowerCase().includes('prime set')){
+                    if(el.item_name.toLowerCase().includes(' prime ')){
                         let it = new Item(el.item_name, el.url_name, el.thumb);
                         items.push(it);
                     }
