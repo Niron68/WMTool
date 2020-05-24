@@ -13,7 +13,7 @@ class Rarity{
         this.name = name;
         if(this.name == 'Uncommon'){
             this.raffinage = new Map([['Intact', 11],['Exceptional', 13],['Flawless', 17],['Radiant', 20]]);
-        }else if(this.name = 'Rare'){
+        }else if(this.name == 'Rare'){
             this.raffinage = new Map([['Intact', 2],['Exceptional', 4],['Flawless', 6],['Radiant', 10]]);
         }else{
             this.raffinage = new Map([['Intact', 25.33],['Exceptional', 23.33],['Flawless', 20],['Radiant', 16.67]]);
