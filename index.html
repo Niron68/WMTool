@@ -8,29 +8,36 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <input type="text" id='searchItems' disabled />
-    <button id='butRefresh' disabled>Refresh</button>
+    <div id='searchBar'>
+        <input type="text" id='searchItems' disabled />
+        <button id='butRefresh' disabled>Refresh</button>
+    </div>
     <div class='allTable'>
-        <table>
-            <thead>
-                <th></th>
-                <th>Name</th>
-                <th>Price</th>
-            </thead>
-            <tbody id='tableItems'>
-                
-            </tbody>
-        </table>
-        <table style='float: right;'>
-            <thead>
-                <th></th>
-                <th>Name</th>
-                <th>Price</th>
-            </thead>
-            <tbody id='tableRelics'>
-                
-            </tbody>
-        </table>
+        <div class='tableau'>
+            <table>
+                <thead>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Price</th>
+                </thead>
+                <tbody id='tableItems'>
+                    
+                </tbody>
+            </table>
+        </div>
+        <div class='tableau'>
+            <label>Vaulted</label>
+            <input type="checkbox" id='checkboxVaulted' checked disabled/>
+            <table>
+                <thead>
+                    <th>Name</th>
+                    <th>Price</th>
+                </thead>
+                <tbody id='tableRelics'>
+                    
+                </tbody>
+            </table>
+        </div>
     </div>
     <div id="myModal" class="modal">
         <!-- Modal content -->

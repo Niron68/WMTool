@@ -27,6 +27,7 @@ class Relic {
         this.ere = ere;
         this.name = name;
         this.loot = new Map();
+        this.vaulted = false;
     }
 
     get averagePrice(){
@@ -45,6 +46,7 @@ class Relic {
 
 let items = [];
 let relics = [];
+let vaultedRelicsName = [];
 
 let modal;
 let closeModal;
@@ -53,6 +55,7 @@ let tableItems;
 let tableRelics;
 let searchItems;
 let butRefresh;
+let checkboxVaulted;
 
 main = () => {
     tableItems = document.getElementById('tableItems');
@@ -62,18 +65,16 @@ main = () => {
     modal = document.getElementById("myModal");
     closeModal = document.getElementById('closeModal');
     modalContent = document.getElementById('modal-content');
+    checkboxVaulted = document.getElementById('checkboxVaulted');
 
     loadData();
 
     searchItems.addEventListener('input', () => {
-        let newBody = document.createElement('tbody');
-        fillTable(newBody, filterByName(sortByPrice(items), searchItems.value));
-        tableItems.parentNode.replaceChild(newBody, tableItems);
-        tableItems = newBody;
-        let newBody2 = document.createElement('tbody');
-        fillWithRelics(newBody2, filterByRelicName(sortByAveragePrice(relics), searchItems.value));
-        tableRelics.parentNode.replaceChild(newBody2, tableRelics);
-        tableRelics = newBody2;
+        refreshDisplay();
+    });
+
+    checkboxVaulted.addEventListener('change', () => {
+        refreshDisplay();
     });
 
     butRefresh.addEventListener('click', () => {
@@ -127,6 +128,12 @@ function filterByRelicName(list, filtre){
     return list.filter(it => it.fullName.toLowerCase().includes(filtre.toLowerCase()));
 }
 
+function filterRelicByVaulted(list){
+    if(!checkboxVaulted.checked)
+        return list.filter(rel => !rel.vaulted)
+    return list;
+}
+
 function fillTable(table, list){
     list.forEach(el => {
         let row = table.insertRow();
@@ -140,6 +147,11 @@ function fillTable(table, list){
         row.addEventListener('click', () => {
             el.relics.forEach((value, key, map) => {
                 let text = document.createElement('p');
+                if(relics.find(rel => rel.fullName == key).vaulted){
+                    text.style.backgroundColor = 'lightcoral';
+                }else{
+                    text.style.backgroundColor = 'lightgreen';
+                }
                 text.innerText = key + ' ' + value.name;
                 modalContent.appendChild(text);
             })
@@ -152,9 +164,13 @@ function fillWithRelics(table, list){
     // À remplir
     list.forEach((el) => {
         let row = table.insertRow();
-        row.insertCell();
-        row.insertCell().appendChild(document.createTextNode(el.fullName));
-        row.insertCell().appendChild(document.createTextNode(el.averagePrice.toFixed(1)));
+        let cellName = row.insertCell().appendChild(document.createTextNode(el.fullName));
+        let cellPrice = row.insertCell().appendChild(document.createTextNode(el.averagePrice.toFixed(1)));
+        if(el.vaulted){
+            row.style.backgroundColor = 'lightcoral';
+        }else{
+            row.style.backgroundColor = 'lightgreen';
+        }
         row.addEventListener('click', () => {
             el.loot.forEach((value, key, map) => {
                 let text = document.createElement('p');
@@ -164,6 +180,19 @@ function fillWithRelics(table, list){
             modal.style.display = 'block';
         });
     });
+}
+
+function applyFilter(){
+    let res = sortByPrice(items);
+    res = filterByName(res, searchItems.value);
+    return res;
+}
+
+function applyRelicFilter(){
+    let res = sortByAveragePrice(relics);
+    res = filterByRelicName(res, searchItems.value);
+    res = filterRelicByVaulted(res);
+    return res;
 }
 
 function removeModal(){
@@ -193,7 +222,7 @@ function refreshPrice(){
             }
 
             let newBody = document.createElement('tbody');
-            fillTable(newBody, filterByName(sortByPrice(items), searchItems.value));
+            fillTable(newBody, applyFilter());
             tableItems.parentNode.replaceChild(newBody, tableItems);
             tableItems = newBody;
 
@@ -201,6 +230,38 @@ function refreshPrice(){
             butRefresh.disabled = false;
             
         });
+}
+
+function refreshDisplay(){
+    let newBody = document.createElement('tbody');
+    fillTable(newBody, applyFilter());
+    tableItems.parentNode.replaceChild(newBody, tableItems);
+    tableItems = newBody;
+
+    let newBody2 = document.createElement('tbody');
+    fillWithRelics(newBody2, applyRelicFilter());
+    tableRelics.parentNode.replaceChild(newBody2, tableRelics);
+    tableRelics = newBody2;
+}
+
+function checkIfVaulted(){
+    fetch('https://warframe.fandom.com/wiki/Void_Relic')
+    .then(r => r.text())
+    .then(text => {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(text, 'text/html');
+        let divVaulted = doc.getElementById('mw-customcollapsible-VaultedRelicList');
+        let spanVaulted = divVaulted.getElementsByClassName('relic-tooltip');
+        for(let i = 0; i < spanVaulted.length; i++){
+            if(relics.filter(rel => rel.fullName == spanVaulted[i].firstChild.innerText).length >= 1){
+                relics[relics.findIndex(rel => rel.fullName == spanVaulted[i].firstChild.innerText)].vaulted = true;
+            }
+        }
+        relics[relics.findIndex(rel => rel.fullName == 'Neo O1')].vaulted = true;
+        relics[relics.findIndex(rel => rel.fullName == 'Axi V8')].vaulted = true;
+        refreshDisplay();
+        checkboxVaulted.disabled = false;
+    })
 }
 
 function loadData(){
@@ -249,14 +310,14 @@ function loadData(){
                         });
 
                         let newBody = document.createElement('tbody');
-                        fillWithRelics(newBody, filterByRelicName(sortByAveragePrice(relics), ''));
+                        fillWithRelics(newBody, applyRelicFilter());
                         tableRelics.parentNode.replaceChild(newBody, tableRelics);
                         tableRelics = newBody;
+                        
+                        checkIfVaulted();
 
                     });
                 });
-                console.log(items);
-                console.log(relics);
             
         })
         .catch((err) => {
