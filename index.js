@@ -1,5 +1,5 @@
 class Item {
-    constructor(name, url_name, image){
+    constructor(name, url_name, image, id){
         this.name = name;
         this.url_name = url_name;
         this.image = 'https://warframe.market/static/assets/' + image;
@@ -19,6 +19,21 @@ class Rarity{
             this.raffinage = new Map([['Intact', 25.33],['Exceptional', 23.33],['Flawless', 20],['Radiant', 16.67]]);
             this.name = 'Common';
         }
+    }
+}
+
+class Order{
+    constructor(type, item, platinum){
+        this.type = type;
+        this.item = item;
+        this.platinum = platinum;
+    }
+}
+
+class User{
+    constructor(token, name){
+        this.token = token;
+        this.name = name;
     }
 }
 
@@ -46,7 +61,8 @@ class Relic {
 
 let items = [];
 let relics = [];
-let token = '';
+let orders = [];
+let user = null;
 
 let modal;
 let closeModal;
@@ -59,6 +75,14 @@ let checkboxVaulted;
 let checkboxSet;
 let loginForm;
 let loginContainer;
+let userContainer;
+let userName;
+let logoutButton;
+let allTable;
+let menuTitle;
+let menuOrder;
+let ordersPage;
+let ordersList;
 
 main = () => {
     tableItems = document.getElementById('tableItems');
@@ -72,16 +96,61 @@ main = () => {
     checkboxSet = document.getElementById('checkboxSet');
     loginForm = document.forms['login-form'];
     loginContainer = document.getElementsByClassName('login-container')[0];
+    userContainer = document.getElementsByClassName('user-container')[0];
+    userName = document.getElementById('userName');
+    logoutButton = document.getElementById('logoutButton');
+    allTable = document.getElementsByClassName('allTable')[0];
+    menuTitle = document.getElementById('menuTitle');
+    menuOrder = document.getElementById('menuOrder');
+    ordersPage = document.getElementsByClassName('ordersPage')[0];
+    ordersList = document.getElementById('ordersList');
+
+    userContainer.style.display = 'none';
+    ordersPage.style.display = 'none';
 
     loadData();
+
+    menuTitle.addEventListener('click', () => {
+        allTable.style.display = '';
+        ordersPage.style.display = 'none';
+    });
+
+    menuOrder.addEventListener('click', () => {
+        if(user != null){
+            let header = new Headers({
+                'platform': 'pc',
+                'language': 'en',
+                'authorization': user.token
+            });
+            let init = {
+                method: 'GET',
+                headers: header
+            }
+            fetch('https://api.warframe.market/v1/profile/orders', init)
+            .then(r => r.json())
+            .then(json => {
+                json.payload.orders.forEach((or) => {
+                    if(items.filter(it => it.id == or.id).length >= 1){
+                        orders.push(new Order(or.order_type, items.find(it => it.id == or.id), or.platinum));
+                    }
+                });
+                refreshOrderDisplay();
+            });
+            allTable.style.display = 'none';
+            ordersPage.style.display = '';
+        }else{
+            alert('You need to sign in for access this page !');
+        }
+    });
 
     loginForm.onsubmit = () => {
         let header = {
             'content-type': 'application/json',
             'platform': 'pc',
-            'authorization': 'JWT'
+            'authorization': 'JWT Token'
         };
         let body = JSON.stringify({
+            'auth_type': 'header',
             'email': loginForm['email'].value,
             'password': loginForm['pass'].value
         });
@@ -92,10 +161,14 @@ main = () => {
         };
         fetch('https://api.warframe.market/v1/auth/signin', init)
         .then(response => {
-            let content = document.cookie;
+            let content = response.headers.get('Authorization');
             response.json().then(json => {
                 if(json.error == null || json.error == undefined){
-                    console.log(response);
+                    user = new User(content, json.payload.user.ingame_name);
+                    loginForm['pass'].style.backgroundColor = '';
+                    loginContainer.style.display = 'none';
+                    userName.innerText = user.name;
+                    userContainer.style.display = '';
                 }else{
                     loginForm['pass'].style.backgroundColor = 'lightcoral';
                 }
@@ -103,7 +176,15 @@ main = () => {
             });
         });
         return false;
-    }
+    };
+
+    logoutButton.addEventListener('click', () => {
+        userContainer.style.display = 'none';
+        userName.innerText = '';
+        loginForm['email'].value = '';
+        loginForm['pass'].value = '';
+        loginContainer.style.display = '';
+    });
 
     searchItems.addEventListener('input', () => {
         refreshDisplay();
@@ -180,6 +261,10 @@ function filterBySet(list){
     return list;
 }
 
+function filterOrderByName(list, filtre){
+    return list.filter(el => el.name.toLowerCase().includes(filtre.toLowerCase()));
+}
+
 function fillTable(table, list){
     list.forEach(el => {
         let row = table.insertRow();
@@ -228,6 +313,24 @@ function fillWithRelics(table, list){
     });
 }
 
+function fillWithOrders(ul, list){
+    ul.innerHTML = '';
+    list.forEach((el) => {
+        if(items.filter(it => it.id == el.id).length >= 1){
+            let li = document.createElement('li');
+            if(el.order_type == 'sell'){
+                li.innerText = 'Sell: ';
+                li.style.backgroundColor = 'plum';
+            }else{
+                li.innerText = 'Buy: ';
+                li.style.backgroundColor = 'paleturquoise';
+            }
+            li.innerText += items.find(it => it.id == el.id).name + '   Price: ' + el.platinum;
+            ul.appendChild(li);
+        }
+    })
+}
+
 function applyFilter(){
     let res = sortByPrice(items);
     res = filterByName(res, searchItems.value);
@@ -240,6 +343,10 @@ function applyRelicFilter(){
     res = filterByRelicName(res, searchItems.value);
     res = filterRelicByVaulted(res);
     return res;
+}
+
+function applyOrderFilter(){
+    let res = filterOrderByName(orders, searchItems.value);
 }
 
 function removeModal(){
@@ -291,6 +398,10 @@ function refreshDisplay(){
     tableRelics = newBody2;
 }
 
+function refreshOrderDisplay(){
+    fillWithOrders(ordersList, applyOrderFilter());
+}
+
 function checkIfVaulted(){
     fetch('https://warframe.fandom.com/wiki/Void_Relic')
     .then(r => r.text())
@@ -319,7 +430,7 @@ function loadData(){
             if(allItems.length != 0){
                 allItems.forEach((el) => {
                     if(el.item_name.toLowerCase().includes(' prime ')){
-                        let it = new Item(el.item_name, el.url_name, el.thumb);
+                        let it = new Item(el.item_name, el.url_name, el.thumb, el.id);
                         items.push(it);
                     }
                 })

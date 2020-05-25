@@ -38,7 +38,10 @@ body{
 }
 
 header{
+    position: fixed;
+    top: 0;
     height: 70px;
+    width: 100%;
     background-color: dodgerblue;
     margin: 0;
     vertical-align: top;
@@ -57,6 +60,44 @@ header h1{
 header div.login-container{
     margin-right: 20px;
     align-self: center;
+}
+
+header div.user-container{
+    margin-right: 20px;
+    align-self: center;
+}
+
+header div.user-container p{
+    display: inline;
+    font-weight: bold;
+    color: white;
+}
+
+nav{
+    position: fixed;
+    height: 100%;
+    width: 15%;
+    z-index: 1;
+    top: 70px;
+    left: 0;
+    background-color: #888;
+    overflow-x: hidden;
+    padding-top: 60px;
+}
+
+nav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    background-color: #f1f1f1;
+    color: black;
 }
 
 .close:hover,
@@ -94,7 +135,7 @@ td{
     height: 30px;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 30px;
+    margin-top: 100px;
     margin-bottom: 40px;
 }
 

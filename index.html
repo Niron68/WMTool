@@ -10,7 +10,7 @@
 <body>
 
     <header>
-        <h1>WMTool</h1>
+        <h1 id='menuTitle'>WMTool</h1>
         <div class='login-container'>
             <form name='login-form'>
                 <input type="email" placeholder="E-mail" name="email" required>
@@ -18,7 +18,15 @@
                 <button type="submit">Login</button>
             </form>
         </div>
+        <div class='user-container'>
+            <p id='userName'></p>
+            <button id='logoutButton'>Logout</button>
+        </div>
     </header>
+
+    <nav>
+        <a id='menuOrder'>Your Orders</a>
+    </nav>
 
     <div id='searchBar'>
         <input type="text" id='searchItems' placeholder="Search items or relics" disabled />
@@ -53,6 +61,13 @@
             </table>
         </div>
     </div>
+
+    <div class='ordersPage'>
+        <ul id='ordersList'>
+
+        </ul>
+    </div>
+
     <div id="myModal" class="modal">
         <!-- Modal content -->
         <div class="modal-content">
