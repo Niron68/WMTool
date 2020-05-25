@@ -8,8 +8,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <header>
+        <h1>WMTool</h1>
+        <div class='login-container'>
+            <form name='login-form'>
+                <input type="email" placeholder="E-mail" name="email" required>
+                <input type="password" placeholder="Password" name="pass" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </header>
+
     <div id='searchBar'>
-        <input type="text" id='searchItems' disabled />
+        <input type="text" id='searchItems' placeholder="Search items or relics" disabled />
         <button id='butRefresh' disabled>Refresh</button>
     </div>
     <div class='allTable'>
@@ -30,7 +42,7 @@
         <div class='tableau'>
             <label>Vaulted</label>
             <input type="checkbox" id='checkboxVaulted' checked disabled/>
-            <table>
+            <table id='relics'>
                 <thead>
                     <th>Name</th>
                     <th>Price</th>

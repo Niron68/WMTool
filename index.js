@@ -46,7 +46,7 @@ class Relic {
 
 let items = [];
 let relics = [];
-let vaultedRelicsName = [];
+let token = '';
 
 let modal;
 let closeModal;
@@ -57,6 +57,8 @@ let searchItems;
 let butRefresh;
 let checkboxVaulted;
 let checkboxSet;
+let loginForm;
+let loginContainer;
 
 main = () => {
     tableItems = document.getElementById('tableItems');
@@ -68,8 +70,40 @@ main = () => {
     modalContent = document.getElementById('modal-content');
     checkboxVaulted = document.getElementById('checkboxVaulted');
     checkboxSet = document.getElementById('checkboxSet');
+    loginForm = document.forms['login-form'];
+    loginContainer = document.getElementsByClassName('login-container')[0];
 
     loadData();
+
+    loginForm.onsubmit = () => {
+        let header = {
+            'content-type': 'application/json',
+            'platform': 'pc',
+            'authorization': 'JWT'
+        };
+        let body = JSON.stringify({
+            'email': loginForm['email'].value,
+            'password': loginForm['pass'].value
+        });
+        let init = {
+            method: 'POST',
+            headers: new Headers(header),
+            body: new Blob([body], {type: 'application/json'})
+        };
+        fetch('https://api.warframe.market/v1/auth/signin', init)
+        .then(response => {
+            let content = document.cookie;
+            response.json().then(json => {
+                if(json.error == null || json.error == undefined){
+                    console.log(response);
+                }else{
+                    loginForm['pass'].style.backgroundColor = 'lightcoral';
+                }
+                console.log(json);
+            });
+        });
+        return false;
+    }
 
     searchItems.addEventListener('input', () => {
         refreshDisplay();
