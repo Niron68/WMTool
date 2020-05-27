@@ -1,3 +1,5 @@
+const storage = require('electron-json-storage');
+
 class Item {
     constructor(name, url_name, image, id){
         this.name = name;
@@ -45,12 +47,31 @@ class Relic {
         this.vaulted = false;
     }
 
+    // get averagePrice(){
+    //     let total = 0;
+    //     this.loot.forEach((value, key, map) => {
+    //         total += key.price * value.raffinage.get('Intact');
+    //     });
+    //     return total/100;
+    // }
+
     get averagePrice(){
-        let total = 0;
-        this.loot.forEach((value, key, map) => {
-            total += key.price * value.raffinage.get('Intact');
+        let res = [];
+        let bestName;
+        let best = 0;
+        let raffinage = ['Intact', 'Exceptional', 'Flawless', 'Radiant'];
+        raffinage.forEach((raf) => {
+            let total = 0;
+            this.loot.forEach((value, key, map) => {
+                total += key.price * value.raffinage.get(raf);
+            });
+            res.push(total/100);
+            if((total/100) > best + 0.00001){
+                best = (total/100);
+                bestName = raf;
+            }
         });
-        return total/100;
+        return { Intact: res[0], Exceptional: res[1], Flawless: res[2], Radiant: res[3], Best: best, BestName: bestName};
     }
 
     get fullName(){
@@ -83,6 +104,7 @@ let menuTitle;
 let menuOrder;
 let ordersPage;
 let ordersList;
+let refinningSelect;
 
 main = () => {
     tableItems = document.getElementById('tableItems');
@@ -104,6 +126,7 @@ main = () => {
     menuOrder = document.getElementById('menuOrder');
     ordersPage = document.getElementsByClassName('ordersPage')[0];
     ordersList = document.getElementById('ordersList');
+    refinningSelect = document.getElementById('refinningSelect');
 
     userContainer.style.display = 'none';
     ordersPage.style.display = 'none';
@@ -120,7 +143,7 @@ main = () => {
             let header = new Headers({
                 'platform': 'pc',
                 'language': 'en',
-                'authorization': user.token
+                'Authorization': user.token
             });
             let init = {
                 method: 'GET',
@@ -129,6 +152,7 @@ main = () => {
             fetch('https://api.warframe.market/v1/profile/orders', init)
             .then(r => r.json())
             .then(json => {
+                console.log(json);
                 json.payload.orders.forEach((or) => {
                     if(items.filter(it => it.id == or.id).length >= 1){
                         orders.push(new Order(or.order_type, items.find(it => it.id == or.id), or.platinum));
@@ -141,6 +165,10 @@ main = () => {
         }else{
             alert('You need to sign in for access this page !');
         }
+    });
+
+    refinningSelect.addEventListener('change', () => {
+        refreshDisplay();
     });
 
     loginForm.onsubmit = () => {
@@ -161,10 +189,10 @@ main = () => {
         };
         fetch('https://api.warframe.market/v1/auth/signin', init)
         .then(response => {
-            let content = response.headers.get('Authorization');
+            let token = response.headers.get('Authorization');
             response.json().then(json => {
                 if(json.error == null || json.error == undefined){
-                    user = new User(content, json.payload.user.ingame_name);
+                    user = new User(token, json.payload.user.ingame_name);
                     loginForm['pass'].style.backgroundColor = '';
                     loginContainer.style.display = 'none';
                     userName.innerText = user.name;
@@ -172,7 +200,7 @@ main = () => {
                 }else{
                     loginForm['pass'].style.backgroundColor = 'lightcoral';
                 }
-                console.log(json);
+                console.log(user);
             });
         });
         return false;
@@ -184,6 +212,8 @@ main = () => {
         loginForm['email'].value = '';
         loginForm['pass'].value = '';
         loginContainer.style.display = '';
+        allTable.style.display = '';
+        ordersPage.style.display = 'none';
     });
 
     searchItems.addEventListener('input', () => {
@@ -199,14 +229,15 @@ main = () => {
     });
 
     butRefresh.addEventListener('click', () => {
-        refreshPrice();
+        refreshPrice().then(() => {
+            refreshDisplay();
+        });
     });
 
     closeModal.onclick = () => {
         removeModal();
     };
 
-    console.log(items);
 }
 
 window.onclick = function(event) {
@@ -231,10 +262,10 @@ function sortByPrice(list){
 
 function sortByAveragePrice(list){
     return list.sort((a, b) => {
-        if(a.averagePrice < b.averagePrice){
+        if(a.averagePrice[refinningSelect.value] < b.averagePrice[refinningSelect.value]){
             return 1;
         }
-        if(a.averagePrice > b.averagePrice){
+        if(a.averagePrice[refinningSelect.value] > b.averagePrice[refinningSelect.value]){
             return -1;
         }
         return 0;
@@ -295,8 +326,11 @@ function fillWithRelics(table, list){
     // À remplir
     list.forEach((el) => {
         let row = table.insertRow();
-        let cellName = row.insertCell().appendChild(document.createTextNode(el.fullName));
-        let cellPrice = row.insertCell().appendChild(document.createTextNode(el.averagePrice.toFixed(1)));
+        let relName = el.fullName;
+        if(refinningSelect.value == 'Best')
+            relName += ' (' + el.averagePrice['BestName'] + ') ';
+        let cellName = row.insertCell().appendChild(document.createTextNode(relName));
+        let cellPrice = row.insertCell().appendChild(document.createTextNode(el.averagePrice[refinningSelect.value].toFixed(1)));
         if(el.vaulted){
             row.style.backgroundColor = 'lightcoral';
         }else{
