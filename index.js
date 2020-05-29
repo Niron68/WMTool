@@ -47,14 +47,6 @@ class Relic {
         this.vaulted = false;
     }
 
-    // get averagePrice(){
-    //     let total = 0;
-    //     this.loot.forEach((value, key, map) => {
-    //         total += key.price * value.raffinage.get('Intact');
-    //     });
-    //     return total/100;
-    // }
-
     get averagePrice(){
         let res = [];
         let bestName;
@@ -149,6 +141,10 @@ main = () => {
                 method: 'GET',
                 headers: header
             }
+
+            console.log(init);
+            console.log(header.get('Authorization'));
+
             fetch('https://api.warframe.market/v1/profile/orders', init)
             .then(r => r.json())
             .then(json => {
@@ -175,7 +171,7 @@ main = () => {
         let header = {
             'content-type': 'application/json',
             'platform': 'pc',
-            'authorization': 'JWT Token'
+            'Authorization': 'JWT TOKEN'
         };
         let body = JSON.stringify({
             'auth_type': 'header',

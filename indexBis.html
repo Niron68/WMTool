@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMTool</title>
+    <link rel="stylesheet" href="bootstrap.css">
+</head>
+
+<body class='bg-dark'>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand text-dark font-weight-bolder">WMTool</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <form id='login' class='d-inline'>
+                    <input type="email" id="email" placeholder="E-mail">
+                    <input type="password" id="pass" placeholder="Password">
+                    <button type="submit" class='btn btn-success'>Login</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        
+        <div class="row justify-content-center mt-5 mb-5">
+            <div class="col-sm-6 input-group">
+                <input type="text" id="searchBar" class='form-control' placeholder="Search items or relics"> 
+                <div class="group-input-append">
+                    <button class="btn btn-primary" id='refresh'>Refresh</button>
+                </div>
+            </div>
+        </div>
+        <div class="row d-block d-sm-none mb-1">
+            <select id="mode" class="form-control">
+                <option value="Items">Items</option>
+                <option value="Relics">Relics</option>
+            </select>
+        </div>
+        <div class="row justify-content-around">
+            <div class="col-sm-5 col-xs-6">
+                <div class="text-light col-sm-6 mb-2">
+                    <label>Display Set</label>
+                    <input type="checkbox" id="displaySet" class="form-check-inline refresh">
+                </div>
+                <ul class="list-group" id='items'>
+                    <li class="list-group-item bg-info text-light font-weight-bold">Items</li>
+                </ul>
+            </div>
+            <div class="col-sm-5 col-xs-6 mt-xs-5">
+                <div class="form-group form-inline mb-1">
+                    <div class="form-check form-check-inline col-5 m-0">
+                        <label class='form-check-label text-light mr-1' for='displaySet' checked>Vaulted</label>
+                        <input type="checkbox" id="displayVault" class="form-check-input m-0 refresh">
+                    </div>
+                    <select id="refining" class="form-control col-6 refresh">
+                        <option value="Intact">Intact</option>
+                        <option value="Exceptional">Exceptional</option>
+                        <option value="Flawless">Flawless</option>
+                        <option value="Radiant">Radiant</Radiantoption>
+                        <option value="Best">Best</option>
+                    </select>
+                </div>
+                <ul class="list-group" id='relics'>
+                    <li class="list-group-item bg-info text-light font-weight-bold">Relics</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+        
+
+
+    <script src="jquery.js"></script>
+    <script>
+        window.jQuery = window.$ = require('jquery');
+    </script>
+    <script src="popper.js"></script>
+    <script src="bootstrap.js"></script>
+    <script src="indexBis.js"></script>
+</body>
+
+</html>

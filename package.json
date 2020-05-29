@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "electron": "^9.0.0",
-    "electron-json-storage": "^4.1.8"
+    "electron-json-storage": "^4.1.8",
+    "jquery": "^3.5.1"
   }
 }
