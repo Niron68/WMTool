@@ -5,6 +5,7 @@ class Item {
         this.image = 'https://warframe.market/static/assets/' + image;
         this.relics = new Map();
         this.price = 0;
+        this.id = id;
     }
 }
 
@@ -80,7 +81,9 @@ $(() => {
     loadData();
 
     $('#refresh').click(() => {
-        $('.list-group').append('<li class="list-group-item">New Items</li>');
+        refreshPrice().then(() => {
+            refreshDisplay();
+        });
     });
 
     $('#searchBar').on('input', () => {
@@ -89,6 +92,87 @@ $(() => {
 
     $('.refresh').on('change', () => {
         refreshDisplay();
+    });
+
+    $('#mode').on('change', () => {
+        if($('#mode').val() == 'Items'){
+            $('#divItems').removeClass('d-none d-sm-block');
+            $('#divRelics').addClass('d-none d-sm-block');
+        }else{
+            $('#divRelics').removeClass('d-none d-sm-block');
+            $('#divItems').addClass('d-none d-sm-block');
+        }
+    });
+
+    $('ul#relics').click(event => {
+        let relic = relics.find(re => re.name + re.ere == event.target.id);
+        $('#modalInfoTitle').text(relic.fullName);
+        $('#modalInfoBody ul').empty();
+        relic.loot.forEach((value, key, map) => {
+            let content = '<li>' + value.name + ' ' + key.name + ' ' + key.price + '</li>';
+            $('#modalInfoBody ul').append(content);
+        });
+    });
+
+    $('ul#items').click(event => {
+        let item = items.find(it => it.id == event.target.id);
+        $('#modalInfoTitle').text(item.name);
+        $('#modalInfoBody ul').empty();
+        item.relics.forEach((value, key, map) => {
+            let relic = relics.find(re => re.fullName == key);
+            let content = '<li class="list-group-item';
+            if(relic.vaulted){
+                content += ' list-group-item-danger';
+            }else{
+                content += ' list-group-item-success';
+            }
+            content += '">' + key + ' ' + value.name + '</li>';
+            $('#modalInfoBody ul').append(content);
+        });
+    });
+
+    $('#login').on('submit', e => {
+        e.preventDefault();
+        let header = {
+            'content-type': 'application/json',
+            'platform': 'pc',
+            'Authorization': 'JWT TOKEN'
+        };
+        let body = JSON.stringify({
+            'auth_type': 'header',
+            'email': $('#email').val(),
+            'password': $('#pass').val()
+        });
+        let init = {
+            method: 'POST',
+            headers: new Headers(header),
+            body: new Blob([body], {type: 'application/json'})
+        };
+        fetch('https://api.warframe.market/v1/auth/signin', init)
+        .then(response => {
+            let token = response.headers.get('Authorization');
+            response.json().then(json => {
+                if(json.error == null || json.error == undefined){
+                    user = new User(token, json.payload.user.ingame_name);
+                    $('#pass').css('background-color', '');
+                    $('#login-container').addClass('d-none');
+                    $('#user-container h5').text(user.name);
+                    $('#user-container').removeClass('d-none');
+                }else{
+                    $('#pass').css('background-color', 'lightcoral');
+                }
+                console.log(user);
+            });
+        });
+    });
+
+    $('#user-container button').click(() => {
+        $('#user-container').addClass('d-none');
+        $('#user-container h5').text('');
+        $('#email').val('');
+        $('#pass').val('');
+        $('#login-container').removeClass('d-none');
+        user = null;
     });
 
 });
@@ -126,7 +210,7 @@ function filterByRelicName(list, filtre){
 }
 
 function filterRelicByVaulted(list){
-    if(!$('displayVault').prop('checked'))
+    if(!$('#displayVault').prop('checked'))
         return list.filter(rel => !rel.vaulted)
     return list;
 }
@@ -156,7 +240,8 @@ function actualiseListItem(){
     $('ul#items').append('<li class="list-group-item bg-info text-light font-weight-bold">Items</li>');
     let list = applyFilter();
     list.forEach((it) => {
-        $('ul#items').append('<li class="list-group-item font-weight-bold"><img src="' + it.image + '" width="32" height="32"> ' + it.name + '       ' + it.price + '</li>');
+        let content = '<a id="' + it.id + '" class="list-group-item list-group-item-action font-weight-bold';
+        $('ul#items').append('<a id="' + it.id + '" class="list-group-item list-group-item-action font-weight-bold" data-toggle="modal" data-target="#modalInfo" ><img src="' + it.image + '" width="32" height="32"> ' + it.name + '       ' + it.price + '</a>');
     });
 }
 
@@ -165,7 +250,19 @@ function actualiseListRelic(){
     $('ul#relics').append('<li class="list-group-item bg-info text-light font-weight-bold">Relics</li>');
     let list = applyRelicFilter();
     list.forEach((it) => {
-        $('ul#relics').append('<li class="list-group-item font-weight-bold">' + it.fullName + '   ' + it.averagePrice['Intact'].toFixed(1) + '</li>');
+        let content = '<a id="' + it.name + it.ere + '" class="list-group-item list-group-item-action font-weight-bold ';
+        if(it.vaulted){
+            content += 'list-group-item-danger';
+        }else{
+            content += 'list-group-item-success';
+        }
+        content += '" data-toggle="modal" data-target="#modalInfo" >' + it.fullName + ' ';
+        if($('#refining').val() == 'Best'){
+            content += '(' + it.averagePrice['BestName'] + ') ';
+        }
+        content += it.averagePrice[$('#refining').val()].toFixed(1);
+        content += '</a>';
+        $('ul#relics').append(content);
     });
 }
 
@@ -201,6 +298,26 @@ function refreshPrice(){
             $('#refresh').prop('disabled', false);
             // checkboxSet.disabled = false;
         });
+}
+
+function checkIfVaulted(){
+    fetch('https://warframe.fandom.com/wiki/Void_Relic')
+    .then(r => r.text())
+    .then(text => {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(text, 'text/html');
+        let divVaulted = doc.getElementById('mw-customcollapsible-VaultedRelicList');
+        let spanVaulted = divVaulted.getElementsByClassName('relic-tooltip');
+        for(let i = 0; i < spanVaulted.length; i++){
+            if(relics.filter(rel => rel.fullName == spanVaulted[i].firstChild.innerText).length >= 1){
+                relics[relics.findIndex(rel => rel.fullName == spanVaulted[i].firstChild.innerText)].vaulted = true;
+            }
+        }
+        relics[relics.findIndex(rel => rel.fullName == 'Neo O1')].vaulted = true;
+        relics[relics.findIndex(rel => rel.fullName == 'Axi V8')].vaulted = true;
+        refreshDisplay();
+        $('#displayVault').prop('disabled', false);
+    })
 }
 
 function loadData(){
@@ -250,7 +367,12 @@ function loadData(){
 
                         actualiseListRelic();
                         
-                        // checkIfVaulted();
+                        $('#searchBar').prop('disabled', false);
+                        $('#refresh').prop('disabled', false);
+                        $('#displaySet').prop('disabled', false);
+                        $('#refining').prop('disabled', false);
+                        $('#mode').prop('disabled', false);
+                        checkIfVaulted();
 
                     });
                 });

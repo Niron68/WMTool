@@ -17,12 +17,16 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
+            <div class="navbar-nav" id='login-container'>
                 <form id='login' class='d-inline'>
                     <input type="email" id="email" placeholder="E-mail">
                     <input type="password" id="pass" placeholder="Password">
                     <button type="submit" class='btn btn-success'>Login</button>
                 </form>
+            </div>
+            <div class="navbar-nav d-none" id='user-container'>
+                <h5 class='mr-2 mt-1'></h5>
+                <button class="btn btn-danger">Logout</button>
             </div>
         </div>
     </nav>
@@ -31,35 +35,35 @@
         
         <div class="row justify-content-center mt-5 mb-5">
             <div class="col-sm-6 input-group">
-                <input type="text" id="searchBar" class='form-control' placeholder="Search items or relics"> 
+                <input type="text" id="searchBar" class='form-control' placeholder="Search items or relics" disabled> 
                 <div class="group-input-append">
-                    <button class="btn btn-primary" id='refresh'>Refresh</button>
+                    <button class="btn btn-primary" id='refresh' disabled>Refresh</button>
                 </div>
             </div>
         </div>
         <div class="row d-block d-sm-none mb-1">
-            <select id="mode" class="form-control">
+            <select id="mode" class="form-control" disabled>
                 <option value="Items">Items</option>
                 <option value="Relics">Relics</option>
             </select>
         </div>
         <div class="row justify-content-around">
-            <div class="col-sm-5 col-xs-6">
+            <div class="col-sm-5 col-xs-6" id='divItems'>
                 <div class="text-light col-sm-6 mb-2">
                     <label>Display Set</label>
-                    <input type="checkbox" id="displaySet" class="form-check-inline refresh">
+                    <input type="checkbox" id="displaySet" class="form-check-inline refresh" disabled>
                 </div>
                 <ul class="list-group" id='items'>
                     <li class="list-group-item bg-info text-light font-weight-bold">Items</li>
                 </ul>
             </div>
-            <div class="col-sm-5 col-xs-6 mt-xs-5">
+            <div class="col-sm-5 col-xs-6 mt-xs-5 d-none d-sm-block" id='divRelics'>
                 <div class="form-group form-inline mb-1">
                     <div class="form-check form-check-inline col-5 m-0">
-                        <label class='form-check-label text-light mr-1' for='displaySet' checked>Vaulted</label>
-                        <input type="checkbox" id="displayVault" class="form-check-input m-0 refresh">
+                        <label class='form-check-label text-light mr-1' for='displayVault'>Vaulted</label>
+                        <input type="checkbox" id="displayVault" class="form-check-input m-0 refresh" disabled checked>
                     </div>
-                    <select id="refining" class="form-control col-6 refresh">
+                    <select id="refining" class="form-control col-6 refresh" disabled>
                         <option value="Intact">Intact</option>
                         <option value="Exceptional">Exceptional</option>
                         <option value="Flawless">Flawless</option>
@@ -70,6 +74,23 @@
                 <ul class="list-group" id='relics'>
                     <li class="list-group-item bg-info text-light font-weight-bold">Relics</li>
                 </ul>
+            </div>
+        </div>
+        <div class="modal fade" tabindex="-1" role='dialog' id='modalInfo' aria-hidden='true'>
+            <div class="modal-dialog modal-dialog-centered" role='document'>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id='modalInfoTitle'>iesnrtiauienia</h5>
+                        <button type='button' class="close" data-dismiss='modal' aria-label='Close'>
+                            <span aria-hidden='true'>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id='modalInfoBody'>
+                        <ul class='list-group-flush'>
+
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
