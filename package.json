@@ -4,13 +4,20 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "dist": "electron-builder build"
   },
   "author": "niron",
   "license": "ISC",
   "dependencies": {
-    "electron": "^9.0.0",
     "electron-json-storage": "^4.1.8",
     "jquery": "^3.5.1"
+  },
+  "build": {
+    "appId": "com.niron.wmtool" ,
+    "win": {
+      "target": "nsis"
+    }
   }
 }

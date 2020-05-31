@@ -8,6 +8,7 @@ function createWindow () {
         nodeIntegration: true
       }
     })
+    // win.setMenuBarVisibility(false);
   
     win.loadFile('indexBis.html');
     win = null;

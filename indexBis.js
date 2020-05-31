@@ -109,7 +109,7 @@ $(() => {
         $('#modalInfoTitle').text(relic.fullName);
         $('#modalInfoBody ul').empty();
         relic.loot.forEach((value, key, map) => {
-            let content = '<li>' + value.name + ' ' + key.name + ' ' + key.price + '</li>';
+            let content = '<li class="list-group-item">' + value.name + ' ' + key.name + ' ' + key.price + '</li>';
             $('#modalInfoBody ul').append(content);
         });
     });
