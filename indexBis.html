@@ -14,7 +14,7 @@
         <a class="navbar-brand text-dark font-weight-bolder">WMTool</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span><img src="icons/sign-in.svg"></img></span>
+            <span><img src="icons/sign-in.svg" id='logImg'></img></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
             <div class="navbar-nav" id='login-container'>
@@ -24,10 +24,15 @@
                     <button type="submit" class='btn btn-success'>Login</button>
                 </form>
             </div>
-            <div class="navbar-nav d-none" id='user-container'>
-                <h5 class='mr-2 mt-1'></h5>
+            <ul class="navbar-nav d-none" id='user-container'>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id='navbarDropdown' role='button' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id='order'>Orders</a>
+                    </div>
+                </li>
                 <button class="btn btn-danger">Logout</button>
-            </div>
+            </ul>
         </div>
     </nav>
 

@@ -156,7 +156,8 @@ $(() => {
                     user = new User(token, json.payload.user.ingame_name);
                     $('#pass').css('background-color', '');
                     $('#login-container').addClass('d-none');
-                    $('#user-container h5').text(user.name);
+                    $('#navbarDropdown').text(user.name);
+                    $('#logImg').attr('src', 'icons/sign-out.svg');
                     $('#user-container').removeClass('d-none');
                 }else{
                     $('#pass').css('background-color', 'lightcoral');
@@ -172,6 +173,15 @@ $(() => {
         $('#email').val('');
         $('#pass').val('');
         $('#login-container').removeClass('d-none');
+        $('#logImg').attr('src', 'icons/sign-in.svg');
+        let header = new Headers({
+            Authorization: user.token
+        });
+        let init = {
+            method: 'GET',
+            headers: header
+        };
+        fetch('https://api.warframe.market/v1/auth/signout', init);
         user = null;
     });
 
