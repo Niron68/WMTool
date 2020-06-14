@@ -157,7 +157,7 @@ $(() => {
                     $('#pass').css('background-color', '');
                     $('#login-container').addClass('d-none');
                     $('#navbarDropdown').text(user.name);
-                    $('#logImg').attr('src', 'icons/sign-out.svg');
+                    $('#logImg').attr('src', 'images/sign-out.svg');
                     $('#user-container').removeClass('d-none');
                 }else{
                     $('#pass').css('background-color', 'lightcoral');
@@ -173,7 +173,7 @@ $(() => {
         $('#email').val('');
         $('#pass').val('');
         $('#login-container').removeClass('d-none');
-        $('#logImg').attr('src', 'icons/sign-in.svg');
+        $('#logImg').attr('src', 'images/sign-in.svg');
         let header = new Headers({
             Authorization: user.token
         });
@@ -283,23 +283,13 @@ function refreshDisplay(){
 
 function refreshPrice(){
     $('#refresh').prop('disabled', true);
-    let requests = items.map(it => fetch('http://api.warframe.market/v1/items/' + it.url_name + '/orders'));
+    let requests = items.map(it => fetch('http://api.warframe.market/v1/items/' + it.url_name + '/orders/top'));
     return Promise.all(requests)
         .then(res => Promise.all(res.map(r => r.json())))
         .then(jsons => {
             for(let i = 0; i < items.length; i++){
-                let orders = jsons[i]['payload']['orders'];
-                let minPrice = null;
-                orders.forEach((or) => {
-                    if(or.platform == 'pc' && or.order_type == 'sell' && or.visible && or.user.status == 'ingame'){
-                        if(minPrice == null){
-                            minPrice = or.platinum;
-                        }else if(or.platinum < minPrice){
-                            minPrice = or.platinum;
-                        }
-                    }
-                });
-                items[i].price = minPrice;
+                let orders = jsons[i]['payload']['sell_orders'];
+                items[i].price = orders[0]['platinum'];
             }
 
             actualiseListItem();
