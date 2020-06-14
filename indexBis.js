@@ -104,6 +104,20 @@ $(() => {
         }
     });
 
+    $('a#items-relics').on('click', () => {
+        $('#divItems').removeClass('d-none');
+        $('#divRelics').addClass('d-sm-block');
+        $('#divMods').addClass('d-none');
+        $('#divArcanes').removeClass('d-sm-block');
+    });
+
+    $('a#arcanes-mods').on('click', () => {
+        $('#divItems').addClass('d-none');
+        $('#divRelics').removeClass('d-sm-block');
+        $('#divMods').removeClass('d-none');
+        $('#divArcanes').addClass('d-sm-block');
+    });
+
     $('ul#relics').click(event => {
         let relic = relics.find(re => re.name + re.ere == event.target.id);
         $('#modalInfoTitle').text(relic.fullName);

@@ -28,6 +28,8 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id='navbarDropdown' role='button' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" id="items-relics">Items/Relic</a>
+                        <a class="dropdown-item" id="arcanes-mods">Arcanes/Mods</a>
                         <a class="dropdown-item" id='order'>Orders</a>
                     </div>
                 </li>
@@ -55,6 +57,9 @@
             </select>
         </div>
         <div class="row justify-content-around">
+
+            <!-- Items -->
+
             <div class="col-sm-5 col-xs-6" id='divItems'>
                 <div class="text-light col-sm-6 mb-2">
                     <label>Display Set</label>
@@ -64,6 +69,9 @@
                     <li class="list-group-item bg-info text-light font-weight-bold">Items</li>
                 </ul>
             </div>
+
+            <!-- Relics -->
+
             <div class="col-sm-5 col-xs-6 mt-xs-5 d-none d-sm-block" id='divRelics'>
                 <div class="form-group form-inline mb-1">
                     <div class="form-check form-check-inline col-5 m-0">
@@ -82,7 +90,27 @@
                     <li class="list-group-item bg-info text-light font-weight-bold">Relics</li>
                 </ul>
             </div>
+
+            <!-- Mods -->
+
+            <div class="col-sm-5 col-xs-6 d-none" id='divMods'>
+                <ul class="list-group" id='mods'>
+                    <li class="list-group-item bg-info text-light font-weight-bold">Mods</li>
+                </ul>
+            </div>
+
+            <!-- Arcanes -->
+
+            <div class="col-sm-5 col-xs-6 mt-xs-5 d-none" id='divArcanes'>
+                <ul class="list-group" id='arcanes'>
+                    <li class="list-group-item bg-info text-light font-weight-bold">Arcanes</li>
+                </ul>
+            </div>
+   
         </div>
+
+        <!-- Modal -->
+
         <div class="modal fade" tabindex="-1" role='dialog' id='modalInfo' aria-hidden='true'>
             <div class="modal-dialog modal-dialog-centered" role='document'>
                 <div class="modal-content">
@@ -100,6 +128,9 @@
                 </div>
             </div>
         </div>
+
+
+
     </div>
         
 
